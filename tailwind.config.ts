@@ -5,6 +5,10 @@ export default {
   theme: {
     extend: {
       colors: {},
+      fontFamily: {
+        sans: ['Vazirmatn', 'system-ui', 'sans-serif'],
+        vazir: ['Vazirmatn', 'system-ui', 'sans-serif'],
+      },
     },
   },
   plugins: [],
