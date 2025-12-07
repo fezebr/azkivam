@@ -38,22 +38,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
+import { ref, computed, onBeforeMount } from 'vue'
 import { getCategories } from '@/apis/category.apis'
 import type { Category, CategoryWithChildren } from '@/models/categories/categories.models'
 
-const categoryTree = ref<CategoryWithChildren[]>([])
-const expanded = ref<number | undefined>(undefined)
-const selectedCategoryId = ref<number | undefined>(undefined)
+const props = defineProps<{
+  categoryId?: number
+}>()
 
 const emit = defineEmits<{
-  categoryChange: [categoryId: number | undefined]
+  'update:categoryId': [categoryId: number | undefined]
 }>()
+
+const categoryTree = ref<CategoryWithChildren[]>([])
+const expanded = ref<number | undefined>(undefined)
+const selectedCategoryId = computed({
+  get: () => props.categoryId,
+  set: (value) => emit('update:categoryId', value),
+})
 
 const fetchCategories = async () => {
   try {
     const categoriesList = await getCategories()
     categoryTree.value = buildCategoryTree(categoriesList.data)
+
+    if (selectedCategoryId.value) {
+      const parentId = categoriesList.data.find((c) => c.id === selectedCategoryId.value)?.parent
+
+      if (parentId) {
+        expanded.value = parentId
+      }
+    }
   } catch (error) {
     console.error('Error fetching categories:', error)
     categoryTree.value = []
@@ -74,7 +89,6 @@ const selectCategory = (id: number) => {
   } else {
     selectedCategoryId.value = id
   }
-  emit('categoryChange', selectedCategoryId.value)
 }
 
 const isSelected = (id: number) => selectedCategoryId.value === id
@@ -108,4 +122,3 @@ function buildCategoryTree(categories: Category[]): CategoryWithChildren[] {
 
 onBeforeMount(fetchCategories)
 </script>
-

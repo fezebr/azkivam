@@ -37,13 +37,20 @@ import { ref, computed, onBeforeMount } from 'vue'
 import { getMerchants } from '@/apis/merchant.apis'
 import type { Merchant } from '@/models/merchants/merchants.models'
 
-const merchants = ref<Merchant[]>([])
-const searchQuery = ref('')
-const selectedMerchantIds = ref<number[]>([])
+const props = defineProps<{
+  merchantIds?: number[]
+}>()
 
 const emit = defineEmits<{
-  merchantChange: [merchantIds: number[]]
+  'update:merchantIds': [merchantIds: number[]]
 }>()
+
+const merchants = ref<Merchant[]>([])
+const searchQuery = ref('')
+const selectedMerchantIds = computed({
+  get: () => props.merchantIds || [],
+  set: (value) => emit('update:merchantIds', value),
+})
 
 const fetchMerchants = async () => {
   try {
@@ -56,13 +63,14 @@ const fetchMerchants = async () => {
 }
 
 const selectMerchant = (id: number) => {
-  const index = selectedMerchantIds.value.indexOf(id)
+  const currentIds = [...selectedMerchantIds.value]
+  const index = currentIds.indexOf(id)
   if (index > -1) {
-    selectedMerchantIds.value.splice(index, 1)
+    currentIds.splice(index, 1)
   } else {
-    selectedMerchantIds.value.push(id)
+    currentIds.push(id)
   }
-  emit('merchantChange', [...selectedMerchantIds.value])
+  selectedMerchantIds.value = currentIds
 }
 
 const isMerchantSelected = (id: number) => selectedMerchantIds.value.includes(id)
