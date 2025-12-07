@@ -1,6 +1,14 @@
 @import 'tailwindcss';
 @custom-variant dark (&:where(.dark, .dark *));
 
+* {
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+}
+
+body {
+  font-family: 'Vazirmatn', system-ui, sans-serif;
+}
+
 p,
 h1,
 h2,
