@@ -32,6 +32,7 @@ import type { Product } from '@/models/products/product.models'
 
 const props = defineProps<{
   selectedCategoryId?: number
+  selectedMerchantIds?: number[]
 }>()
 
 const products = ref<Product[]>([])
@@ -49,6 +50,7 @@ const fetchProducts = async () => {
       size: pageSize.value,
       page: currentPage.value,
       categoryId: props.selectedCategoryId,
+      merchantIds: props.selectedMerchantIds || [],
     })
 
     products.value = response.data.filter((p) => !p.hidden && p.available)
@@ -60,10 +62,11 @@ const fetchProducts = async () => {
 }
 
 watch(
-  () => props.selectedCategoryId,
+  () => [props.selectedCategoryId, props.selectedMerchantIds],
   () => {
     fetchProducts()
   },
+  { deep: true },
 )
 
 onBeforeMount(async () => {
