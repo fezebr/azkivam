@@ -12,4 +12,6 @@ export interface CategoryWithChildren extends Category {
   children?: CategoryWithChildren[]
 }
 
-export type GetCategoriesResponse = Category[]
+export interface GetCategoriesResponse {
+  data: Category[]
+}
