@@ -1,10 +1,10 @@
 <template>
-  <Header />
+  <MainHeader />
   <div class="dark-background">
     <RouterView />
   </div>
 </template>
 
 <script lang="ts" setup>
-import Header from './components/Header.vue'
+import MainHeader from './components/MainHeader.vue'
 </script>
