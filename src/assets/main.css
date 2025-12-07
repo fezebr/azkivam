@@ -1,1 +1,25 @@
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+p,
+h1,
+h2,
+.dark-text {
+  @apply text-gray-950 dark:text-gray-300;
+}
+
+.light-text {
+  @apply text-gray-900 dark:text-gray-400;
+}
+
+.light-background {
+  @apply bg-gray-50 dark:bg-gray-800;
+}
+
+.dark-background {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+
+.btn-shadow {
+  @apply shadow hover:shadow-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition disabled:hover:shadow-none;
+}
