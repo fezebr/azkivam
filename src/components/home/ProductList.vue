@@ -28,7 +28,7 @@
 import { ref, onBeforeMount } from 'vue'
 import ProductCard from '@/components/ProductCard.vue'
 import { getProducts } from '@/apis/product.apis'
-import type { Product } from '@/models/products/products.models'
+import type { Product } from '@/models/products/product.models'
 
 const products = ref<Product[]>([])
 const loading = ref(false)

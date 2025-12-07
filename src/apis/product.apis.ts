@@ -11,11 +11,11 @@ export async function getProducts(params: GetProductsRequest = {}): Promise<GetP
     ...(categoryId ? { categoryId } : {}),
   }
 
-  const response = await apiClient.post<GetProductsResponse>(
+  const { data } = await apiClient.post<GetProductsResponse>(
     '/products',
     { merchantIds },
     { params: query },
   )
 
-  return response.data
+  return data
 }
