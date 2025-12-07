@@ -1,11 +1,15 @@
 export interface Category {
-  id: string | number
+  id: number
   name: string
-  numericId?: number
-  children?: Category[]
+  slug: string
+  enabled: boolean
+  priority: number
+  mapped: boolean
+  parent: number | null
 }
 
-export interface GetCategoriesResponse {
-  data: Category[]
+export interface CategoryWithChildren extends Category {
+  children?: CategoryWithChildren[]
 }
 
+export type GetCategoriesResponse = Category[]

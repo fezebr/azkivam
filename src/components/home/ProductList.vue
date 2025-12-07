@@ -25,16 +25,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeMount } from 'vue'
-import ProductCard from '@/components/ProductCard.vue'
+import { ref, onBeforeMount, watch } from 'vue'
+import ProductCard from '@/components/home/ProductCard.vue'
 import { getProducts } from '@/apis/product.apis'
 import type { Product } from '@/models/products/product.models'
+
+const props = defineProps<{
+  selectedCategoryId?: number
+}>()
 
 const products = ref<Product[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-const selectedCategoryIds = ref<number[]>([])
-const currentPage = ref(2)
+const currentPage = ref(1)
 const pageSize = ref(20)
 
 const fetchProducts = async () => {
@@ -42,12 +45,10 @@ const fetchProducts = async () => {
   error.value = null
 
   try {
-    const categoryId =
-      selectedCategoryIds.value.length > 0 ? selectedCategoryIds.value[0] : undefined
     const response = await getProducts({
       size: pageSize.value,
       page: currentPage.value,
-      categoryId,
+      categoryId: props.selectedCategoryId,
     })
 
     products.value = response.data.filter((p) => !p.hidden && p.available)
@@ -57,6 +58,13 @@ const fetchProducts = async () => {
     loading.value = false
   }
 }
+
+watch(
+  () => props.selectedCategoryId,
+  () => {
+    fetchProducts()
+  },
+)
 
 onBeforeMount(async () => {
   await fetchProducts()

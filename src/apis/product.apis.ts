@@ -1,18 +1,17 @@
 import { apiClient } from '@/services/api.service'
-import type { GetProductsRequest, GetProductsResponse } from '@/models/products/products.models'
+import type { GetProductsRequest, GetProductsResponse } from '@/models/products/product.models'
 
 export async function getProducts(params: GetProductsRequest = {}): Promise<GetProductsResponse> {
   //TODO: change 2 to 1 :)))
-  const { size = 10, page = 2, categoryId, merchantIds = [] } = params
-
+  const { size = 10, page = 1, categoryId, merchantIds = [] } = params
+  const url = categoryId ? `/products/${categoryId}` : '/products'
   const query = {
     size,
     page,
-    ...(categoryId ? { categoryId } : {}),
   }
 
   const { data } = await apiClient.post<GetProductsResponse>(
-    '/products',
+    url,
     { merchantIds },
     { params: query },
   )
