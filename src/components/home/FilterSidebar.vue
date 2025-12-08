@@ -5,7 +5,7 @@
     <h2 class="text-base sm:text-lg font-bold dark-text mb-3 sm:mb-4">فیلترها</h2>
 
     <div class="space-y-3 sm:space-y-4">
-      <CategoryFilter v-model:category-id="categoryId" />
+      <CategoryFilter v-model:category-id="categoryId" @select-category="handleCategorySelect" />
       <MerchantFilter v-model:merchant-ids="merchantIds" />
     </div>
   </aside>
@@ -24,6 +24,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   'update:categoryId': [categoryId: number | undefined]
   'update:merchantIds': [merchantIds: number[]]
+  selectCategory: [categoryId: number, slug: string]
 }>()
 
 const categoryId = computed({
@@ -35,4 +36,8 @@ const merchantIds = computed({
   get: () => props.merchantIds || [],
   set: (value) => emit('update:merchantIds', value),
 })
+
+const handleCategorySelect = (categoryId: number, slug: string) => {
+  emit('selectCategory', categoryId, slug)
+}
 </script>

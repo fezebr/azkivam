@@ -1,23 +1,28 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ProductsView from '../views/ProductsView.vue'
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'products',
-      component: ProductsView,
-    },
-    // {
-    //   path: '/about',
-    //   name: 'about',
-    //   // route level code-splitting
-    //   // this generates a separate chunk (About.[hash].js) for this route
-    //   // which is lazy-loaded when the route is visited.
-    //   component: () => import('../views/AboutView.vue'),
-    // },
-  ],
+import ProductsPage from '@/pages/ProductsPage.vue'
+
+import CategoryProductsPage from '@/pages/CategoryProductsPage.vue'
+
+const routes = [
+  {
+    path: '/',
+    redirect: '/products',
+  },
+  {
+    path: '/products',
+    name: 'products',
+    component: ProductsPage,
+  },
+  {
+    path: '/products/:categoryId/:slug',
+    name: 'category-products',
+    component: CategoryProductsPage,
+    props: true,
+  },
+]
+
+export default createRouter({
+  history: createWebHistory(),
+  routes,
 })
-
-export default router

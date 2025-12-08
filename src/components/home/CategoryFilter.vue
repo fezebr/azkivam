@@ -48,6 +48,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:categoryId': [categoryId: number | undefined]
+  selectCategory: [categoryId: number, slug: string]
 }>()
 
 const categoryTree = ref<CategoryWithChildren[]>([])
@@ -88,6 +89,23 @@ const selectCategory = (id: number) => {
     selectedCategoryId.value = undefined
   } else {
     selectedCategoryId.value = id
+    // Find the category to get its slug
+    const findCategoryInTree = (
+      categories: CategoryWithChildren[],
+    ): CategoryWithChildren | undefined => {
+      for (const cat of categories) {
+        if (cat.id === id) return cat
+        if (cat.children) {
+          const found = findCategoryInTree(cat.children)
+          if (found) return found
+        }
+      }
+      return undefined
+    }
+    const category = findCategoryInTree(categoryTree.value)
+    if (category) {
+      emit('selectCategory', id, category.slug)
+    }
   }
 }
 
