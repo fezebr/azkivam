@@ -1,6 +1,9 @@
 <template>
-  <div class="flex-1 w-full">
-    <div v-if="loading" class="flex justify-center items-center min-h-[300px] sm:min-h-[400px]">
+  <div ref="containerRef" class="flex-1 w-full overflow-auto">
+    <div
+      v-if="loading && products.length === 0"
+      class="flex justify-center items-center min-h-[300px] sm:min-h-[400px]"
+    >
       <p class="text-base sm:text-lg dark-text">در حال بارگذاری...</p>
     </div>
 
@@ -21,11 +24,16 @@
     <div v-else class="flex justify-center items-center min-h-[300px] sm:min-h-[400px]">
       <p class="text-base sm:text-lg dark-text">محصولی یافت نشد</p>
     </div>
+
+    <div v-if="loading && products.length > 0" class="flex justify-center items-center my-4">
+      <p class="text-base sm:text-lg dark-text">در حال بارگذاری بیشتر...</p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onBeforeMount, watch } from 'vue'
+import { useInfiniteScroll } from '@vueuse/core'
 import ProductCard from '@/components/home/ProductCard.vue'
 import { getProducts } from '@/apis/product.apis'
 import type { Product } from '@/models/products/product.models'
@@ -40,8 +48,12 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const currentPage = ref(1)
 const pageSize = ref(20)
+const containerRef = ref<HTMLElement | null>(null)
+const hasMore = ref(true)
 
-const fetchProducts = async () => {
+const fetchProducts = async (append = false) => {
+  if (!hasMore.value) return
+
   loading.value = true
   error.value = null
 
@@ -53,7 +65,19 @@ const fetchProducts = async () => {
       merchantIds: props.selectedMerchantIds || [],
     })
 
-    products.value = response.data.filter((p) => !p.hidden && p.available)
+    const filtered = response.data.filter((p) => !p.hidden && p.available)
+
+    if (append) {
+      products.value.push(...filtered)
+    } else {
+      products.value = filtered
+    }
+
+    if (filtered.length < pageSize.value) {
+      hasMore.value = false
+    } else {
+      currentPage.value++
+    }
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'خطا در دریافت محصولات'
   } finally {
@@ -64,12 +88,26 @@ const fetchProducts = async () => {
 watch(
   () => [props.selectedCategoryId, props.selectedMerchantIds],
   () => {
+    currentPage.value = 1
+    hasMore.value = true
     fetchProducts()
   },
   { deep: true },
 )
 
+// Initial fetch
 onBeforeMount(async () => {
   await fetchProducts()
 })
+
+useInfiniteScroll(
+  containerRef,
+  async () => {
+    await fetchProducts(true)
+  },
+  {
+    distance: 200,
+    disabled: loading,
+  },
+)
 </script>
